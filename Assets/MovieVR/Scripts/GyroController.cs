@@ -11,15 +11,23 @@ public class GyroController : MonoBehaviour
     private Vector3 rotate;
 #endif
 
+    // 視点リセット用修正角度変数
+    public Vector3 fixrot;
+    // 視点リセット用現在角度変数
+    public Vector3 nowrot;
+    // 視点リセット用オフセット変数
+    public Vector3 delrot;
+
     public VideoPlayer videoPlayer;
     // true:再生/false:一時停止
     public bool playModeFlag = false;
 
     public GameObject exitButtonOBJ;
     public GameObject playButtonOBJ;
+    public GameObject resetButtonOBJ;
 
 
-    public Button PlayButton;
+    public Button playButton;
     public Sprite play_image;
     public Sprite pause_image;
 
@@ -31,6 +39,15 @@ public class GyroController : MonoBehaviour
     {
         // 動作確認用ログ
         Debug.Log("started");
+
+
+        fixrot = new Vector3(0, 0, 0);
+        nowrot = new Vector3(0, 0, 0);
+        delrot = new Vector3(0, 0, 0);
+
+        playButton = playButtonOBJ.GetComponent<Button>();
+        timeCount = visibleTimeCount;
+        SetPlayMode(playModeFlag);
 
 #if UNITY_EDITOR || UNITY_STANDALONE
         rotate = transform.eulerAngles;
@@ -68,7 +85,7 @@ public class GyroController : MonoBehaviour
         Quaternion gattitude = Input.gyro.attitude;
         gattitude.x *= -1;
         gattitude.y *= -1;
-        transform.localRotation = Quaternion.Euler(90, 0, 0) * gattitude;
+        transform.localRotation = Quaternion.Euler(90, -fixrot.y, 0) * gattitude;
 #endif
 
         if (timeCount > 0)
@@ -76,11 +93,13 @@ public class GyroController : MonoBehaviour
             timeCount -= Time.deltaTime;
             exitButtonOBJ.SetActive(true);
             playButtonOBJ.SetActive(true);
+            resetButtonOBJ.SetActive(true);
         }
         else
         {
             exitButtonOBJ.SetActive(false);
             playButtonOBJ.SetActive(false);
+            resetButtonOBJ.SetActive(false);
         }
 
         if (Input.GetMouseButtonDown(0))
@@ -102,13 +121,21 @@ public class GyroController : MonoBehaviour
         {
             // 一時停止
             videoPlayer.Play();
-            PlayButton.image.sprite = pause_image;
+            playButton.image.sprite = pause_image;
         }
         else
         {
             // 再生
             videoPlayer.Pause();
-            PlayButton.image.sprite = play_image;
+            playButton.image.sprite = play_image;
         }
+    }
+
+    public void OnClickResetButton()
+    {
+        Debug.Log("Reset");
+
+        nowrot = transform.localEulerAngles;
+        fixrot += (nowrot + delrot);  // 修正角度変数に現在の角度を加算
     }
 }
