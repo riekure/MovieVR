@@ -705,7 +705,7 @@ MonoBehaviour:
   nowrot: {x: 0, y: 0, z: 0}
   delrot: {x: 0, y: 0, z: 0}
   videoPlayer: {fileID: 826188549}
-  playModeFlag: 0
+  playModeFlag: 1
   exitButtonOBJ: {fileID: 1614327792}
   playButtonOBJ: {fileID: 918959227}
   resetButtonOBJ: {fileID: 993171355}
